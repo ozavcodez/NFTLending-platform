@@ -23,6 +23,11 @@ library LibDiamond {
     error InitCallFailed();
     error NoAddress();
     error UnsupportedNFT();
+    error NoStake();
+    error InvalidAmount();
+    error CurrentlyOwing();
+    error TransactionFailed();
+    error AlreadyStaked();
 
     bytes32 constant DIAMOND_STORAGE_POSITION =
         keccak256("diamond.standard.diamond.storage");
@@ -39,6 +44,7 @@ library LibDiamond {
 
     struct Position {
         address nft;
+        uint tokenId;
         uint nftValue;
         uint loanedAmount;
         uint timeLoaned;
@@ -68,6 +74,7 @@ library LibDiamond {
         uint8 interestRate;
         mapping(address => uint) supportedNfts;
         mapping(address => Position) positions;
+        uint contractBalance;
     }
 
     function diamondStorage()

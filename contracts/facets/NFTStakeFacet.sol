@@ -17,6 +17,9 @@ contract NFTStakeFacet {
         ERC721Facet(_nft).safeTransferFrom(msg.sender, address(this), _tokenId);
 
         LibDiamond.Position memory _position;
+
+        if (_position.nft != address(0)) revert LibDiamond.AlreadyStaked();
+
         _position.nft = _nft;
         _position.nftValue = nftValue;
         _position.tokenId = _tokenId;
@@ -34,13 +37,16 @@ contract NFTStakeFacet {
         address _nft = _position.nft;
         uint _tokenId = _position.tokenId;
 
-        if (_position.nft == address(0)) revert LibDiamond.NoStake();
+        if (_nft == address(0)) revert LibDiamond.NoStake();
+        if (_position.loanedAmount > 0) revert LibDiamond.CurrentlyOwing();
 
         _position.nft = address(0);
         _position.tokenId = 0;
         _position.nftValue = 0;
         _position.loanedAmount = 0;
         _position.timeLoaned = 0;
+
+        ds.positions[msg.sender] = _position;
 
         ERC721Facet(_nft).safeTransferFrom(address(this), msg.sender, _tokenId);
 

@@ -21,6 +21,8 @@ library LibDiamond {
     error NonEmptyCalldata();
     error EmptyCalldata();
     error InitCallFailed();
+    error NoAddress();
+    error UnsupportedNFT();
 
     bytes32 constant DIAMOND_STORAGE_POSITION =
         keccak256("diamond.standard.diamond.storage");
@@ -33,6 +35,13 @@ library LibDiamond {
     struct FacetFunctionSelectors {
         bytes4[] functionSelectors;
         uint256 facetAddressPosition; // position of facetAddress in facetAddresses array
+    }
+
+    struct Position {
+        address nft;
+        uint nftValue;
+        uint loanedAmount;
+        uint timeLoaned;
     }
 
     struct DiamondStorage {
@@ -55,14 +64,10 @@ library LibDiamond {
         mapping(address owner => uint256) balances;
         mapping(uint256 tokenId => address) tokenApprovals;
         mapping(address owner => mapping(address operator => bool)) operatorApprovals;
-        //MerkleProof variables
-        bytes32 merkleRoot;
-        uint256 endDate;
-        mapping(address => bool) claimedAddresses;
-        uint256 nftPrice;
-        uint256 totalSupply;
-        uint256 minPurchase;
-        uint256 maxPurchase;
+        //Supported NFTs
+        uint8 interestRate;
+        mapping(address => uint) supportedNfts;
+        mapping(address => Position) positions;
     }
 
     function diamondStorage()

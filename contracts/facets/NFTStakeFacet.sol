@@ -6,6 +6,7 @@ import "./ERC721Facet.sol";
 
 contract NFTStakeFacet {
     event NftStaked(address indexed onwer, address indexed nft, uint tokenId);
+    event NftUnstaked(address indexed onwer, address indexed nft, uint tokenId);
 
     function stakeNft(address _nft, uint _tokenId) external {
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
@@ -18,10 +19,32 @@ contract NFTStakeFacet {
         LibDiamond.Position memory _position;
         _position.nft = _nft;
         _position.nftValue = nftValue;
+        _position.tokenId = _tokenId;
 
         ds.positions[msg.sender] = _position;
 
         emit NftStaked(msg.sender, _nft, _tokenId);
+    }
+
+    function unstakeNft() external {
+        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+
+        LibDiamond.Position memory _position = ds.positions[msg.sender];
+
+        address _nft = _position.nft;
+        uint _tokenId = _position.tokenId;
+
+        if (_position.nft == address(0)) revert LibDiamond.NoStake();
+
+        _position.nft = address(0);
+        _position.tokenId = 0;
+        _position.nftValue = 0;
+        _position.loanedAmount = 0;
+        _position.timeLoaned = 0;
+
+        ERC721Facet(_nft).safeTransferFrom(address(this), msg.sender, _tokenId);
+
+        emit NftUnstaked(msg.sender, _nft, _tokenId);
     }
 
     function addSupportedNft(address _nft, uint _amount) internal {

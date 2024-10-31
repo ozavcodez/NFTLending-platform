@@ -1,5 +1,17 @@
-1. first stake the nft - provide a choice of nfts
-2. nft is evaluated and the limit on what you can borrow is giving
-3. user requests for loan and its sent to user wallet.
-4. interest and time is calculated and when user defaults, liquidate nft
-5. add balance to contract
+1. Test Cases
+NFTStakingFacet Tests:
+
+2. Test staking an NFT and storing its details.
+Test evaluation of an NFT and accurate calculation of borrowing limit.
+LoanManagementFacet Tests:
+
+3. Test requesting a loan within the allowed limit.
+Test interest calculation over time for varying loan amounts.
+LiquidationFacet Tests:
+
+4. Test liquidation of NFT if loan repayment is overdue.
+Test that loan repayment prevents liquidation.
+FundsManagementFacet Tests:
+
+Test adding balance to the contract.
+Test disbursement to users.
